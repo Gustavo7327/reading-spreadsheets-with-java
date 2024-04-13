@@ -9,6 +9,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.aspose.cells.Cell;
 import com.aspose.cells.Workbook;
 import com.aspose.cells.Worksheet;
+import com.aspose.cells.SaveFormat;
 
 public class App 
 {
@@ -54,7 +55,7 @@ public class App
         if(result == JFileChooser.APPROVE_OPTION){
             File file = fileChooser.getSelectedFile();
             try{
-                wb.save(file.getAbsolutePath());
+                wb.save(file.getAbsolutePath(), SaveFormat.XLSX);
                 System.out.println("Workbook save in " + file.getAbsolutePath());
             } catch(Exception e){
                 e.printStackTrace();
