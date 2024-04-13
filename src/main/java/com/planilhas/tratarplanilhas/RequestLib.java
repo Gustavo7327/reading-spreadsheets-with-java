@@ -1,11 +1,16 @@
 package com.planilhas.tratarplanilhas;
 
+import java.io.File;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.aspose.cells.SaveFormat;
 import com.aspose.cells.Workbook;
 import com.aspose.cells.Worksheet;
 import com.google.gson.Gson;
@@ -52,9 +57,19 @@ public class RequestLib {
                     nova.getCells().get(row, 7).setValue(item.getVf().getAverageRating());
                     nova.getCells().get(row, 8).setValue(item.getVf().getPageCount());
 
-                }
+                } 
             }
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Workbook");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel Files (*.xlsx)", "xlsx");
+            fileChooser.setFileFilter(filter);
 
+            int result = fileChooser.showSaveDialog(null);
+            if(result == JFileChooser.APPROVE_OPTION){
+                File file = fileChooser.getSelectedFile();
+                wb.save(file.getAbsolutePath(), SaveFormat.XLSX);
+                System.out.println("Workbook save in " + file.getAbsolutePath());
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
