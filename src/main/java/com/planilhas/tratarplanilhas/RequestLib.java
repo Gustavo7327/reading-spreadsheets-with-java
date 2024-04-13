@@ -19,7 +19,7 @@ public class RequestLib {
     public static void main(String[] args) {
         try {
 
-            Workbook wb = new Workbook("BibliotecaPlanilha.xlsx");
+            Workbook wb = new Workbook("/home/guilherme/Documentos/ProjetoBibliotecaUtils/BibliotecaPlanilha.xlsx");
             wb.getWorksheets().add("DadosRequisitados");
             Worksheet antiga = wb.getWorksheets().get("DadosNaoRepetidosENecessarios");
             Worksheet nova = wb.getWorksheets().get("DadosRequisitados");
@@ -35,7 +35,7 @@ public class RequestLib {
             nova.getCells().get(0, 8).setValue("NUMPAGINAS");
 
             for(int row = 1; row < antiga.getCells().getMaxDataRow(); row++){
-                String urlAPI = "https://www.googleapis.com/books/v1/volumes?q=" + antiga.getCells().get(row, 0).getStringValue();
+                String urlAPI = "https://www.googleapis.com/books/v1/volumes?q=" + antiga.getCells().get(row, 0).getStringValue().replace(" ", "");
 
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlAPI)).build();
@@ -48,15 +48,38 @@ public class RequestLib {
                     Item item = volume.getItems().get(0);
 
                     nova.getCells().get(row, 0).setValue(antiga.getCells().get(row, 0).getStringValue());
-                    nova.getCells().get(row, 1).setValue(item.getVf().getAuthors());
-                    nova.getCells().get(row, 2).setValue(item.getVf().getPublishedDate());
-                    nova.getCells().get(row, 3).setValue(item.getVf().getImageLinks().getThumbnail());
-                    nova.getCells().get(row, 4).setValue(item.getAf().getWebReaderLink());
-                    nova.getCells().get(row, 5).setValue(item.getVf().getDescription());
-                    nova.getCells().get(row, 6).setValue(item.getVf().getCategories());
-                    nova.getCells().get(row, 7).setValue(item.getVf().getAverageRating());
-                    nova.getCells().get(row, 8).setValue(item.getVf().getPageCount());
+                    if(item.getVolumeInfo().getAuthors() != null){
+                        nova.getCells().get(row, 1).setValue(item.getVolumeInfo().getAuthors());
+                    }
 
+                    if(item.getVolumeInfo().getPublishedDate() != null){
+                        nova.getCells().get(row, 2).setValue(item.getVolumeInfo().getPublishedDate());
+                    }
+
+                    if(item.getVolumeInfo().getImageLinks() != null){
+                        nova.getCells().get(row, 3).setValue(item.getVolumeInfo().getImageLinks().getThumbnail());
+                    }
+
+                    if(item.getAccessInfo().getWebReaderLink() != null){
+                        nova.getCells().get(row, 4).setValue(item.getAccessInfo().getWebReaderLink());
+                    }
+
+                    if(item.getVolumeInfo().getDescription() != null){
+                        nova.getCells().get(row, 5).setValue(item.getVolumeInfo().getDescription());
+                    }
+
+                    if(item.getVolumeInfo().getCategories() != null){
+                        nova.getCells().get(row, 6).setValue(item.getVolumeInfo().getCategories());
+                    }
+
+                    if(item.getVolumeInfo().getAverageRating() != null){
+                        nova.getCells().get(row, 7).setValue(item.getVolumeInfo().getAverageRating());
+                    }
+
+                    if(item.getVolumeInfo().getPageCount() != null){
+                        nova.getCells().get(row, 8).setValue(item.getVolumeInfo().getPageCount());
+                    }
+                    
                 } 
             }
             JFileChooser fileChooser = new JFileChooser();
@@ -87,14 +110,14 @@ public class RequestLib {
 
 
     private class Item{
-        private VolumeInfo vf;
-        private AcessInfo af;
+        private VolumeInfo volumeInfo;
+        private AccessInfo accessInfo;
 
-        public VolumeInfo getVf() {
-            return vf;
+        public VolumeInfo getVolumeInfo() {
+            return volumeInfo;
         }
-        public AcessInfo getAf() {
-            return af;
+        public AccessInfo getAccessInfo() {
+            return accessInfo;
         }
     }
 
@@ -138,7 +161,7 @@ public class RequestLib {
         }
     }
 
-    private class AcessInfo{
+    private class AccessInfo{
         private String webReaderLink;
 
         public String getWebReaderLink() {
