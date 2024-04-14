@@ -23,7 +23,7 @@ public class DBConnection {
             conexao = DriverManager.getConnection(url, user, password);
             System.out.println("Conectado ao banco de dados!");
 
-            Workbook wb = new Workbook("/home/guilherme/Documentos/ProjetoBibliotecaUtils/BibliotecaPlanilha.xlsx");
+            Workbook wb = new Workbook("/home/guilherme/Documentos/ProjetoBibliotecaUtils/atualizado.xlsx");
             Worksheet ws = wb.getWorksheets().get("DadosRequisitados");
 
             loop(ws, conexao);
@@ -38,7 +38,7 @@ public class DBConnection {
             }
     }
 
-    public static void insert(Connection conn, String titulo, String autores, String generos, int ano_publicacao, String url_imagem, String url_amostra, String sinopse, double avaliacao, int numero_paginas, int numero_exemplares){
+    public static void insert(Connection conn, String titulo, String autores, String generos, String ano_publicacao, String url_imagem, String url_amostra, String sinopse, double avaliacao, int numero_paginas, int numero_exemplares){
 
         String query = "insert into books (titulo, autores, generos, ano_publicacao, url_imagem, url_amostra, sinopse, avaliacao, numero_paginas, numero_exemplares)" + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -48,7 +48,7 @@ public class DBConnection {
             preparedStatement.setString(1, titulo);
             preparedStatement.setString(2, autores);
             preparedStatement.setString(3, generos);
-            preparedStatement.setInt(4, ano_publicacao);
+            preparedStatement.setString(4, ano_publicacao);
             preparedStatement.setString(5, url_imagem);
             preparedStatement.setString(6, url_amostra);
             preparedStatement.setString(7, sinopse);
@@ -57,6 +57,7 @@ public class DBConnection {
             preparedStatement.setInt(10, numero_exemplares);
 
             preparedStatement.execute();
+            preparedStatement.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -64,11 +65,12 @@ public class DBConnection {
     }
 
     public static void loop(Worksheet ws, Connection conn){
+
         for(int i = 1; i < ws.getCells().getMaxDataRow(); i++){
 
             String titulo = ws.getCells().get(i, 0).getStringValue();
             String autores = ws.getCells().get(i, 1).getStringValue();
-            int ano_publicacao = Integer.parseInt(ws.getCells().get(i, 2).getStringValue());
+            String ano_publicacao = ws.getCells().get(i, 2).getStringValue();
             String url_imagem = ws.getCells().get(i, 3).getStringValue();
             String url_amostra = ws.getCells().get(i, 4).getStringValue();
             String sinopse = ws.getCells().get(i, 5).getStringValue();
@@ -78,6 +80,7 @@ public class DBConnection {
             int numero_exemplares = Integer.parseInt(ws.getCells().get(i, 9).getStringValue());
 
             insert(conn, titulo, autores, generos, ano_publicacao, url_imagem, url_amostra, sinopse, avaliacao, numero_paginas, numero_exemplares);
+
         }
     }
 
